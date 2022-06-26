@@ -3,50 +3,62 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Diagnostics;
 
 namespace SwordDmgCalculator
 {
-    internal class SwordDamage
+    class SwordDamage
     {
         public const int BASE_DAMAGE = 3;
         public const int FLAME_DAMAGE = 2;
 
-        public int Roll;
-        public decimal MagicMultiplier = 1M;
-        public int FlamingDamage = 0;
-        public int Damage;
-
-        public void CalculateDamage()
+        private int roll;
+        public int Roll
         {
-            Damage = (int)(Roll * MagicMultiplier) + BASE_DAMAGE + FlamingDamage;
-            Debug.WriteLine($"CalculateDamage finished: {Damage}(roll: {Roll})");
+            get { return roll; }
+            set
+            {
+                roll = value;
+                CalculateDamage();
+            }
         }
 
-        public void SetMagic(bool isMagic)
+        private void CalculateDamage()
         {
-            if (isMagic)
-            {
-                MagicMultiplier = 1.75M;
-            }
-            else
-            {
-                MagicMultiplier = 1M;
-            }
+            decimal magicMultiplier = 1M;
+            if (Magic) magicMultiplier = 1.75M;
+
+            Damage = (int)(Roll * magicMultiplier) + BASE_DAMAGE;
+            if (Flaming) Damage += FLAME_DAMAGE;
+        }
+
+        private bool magic;
+        public bool Magic
+        {
+            get { return magic; }
+            set { magic = value; CalculateDamage(); }
+
+        }
  
-            Debug.WriteLine($"SetMagic finished: {Damage}(roll: {Roll})");
+        private bool flaming;
+        public bool Flaming 
+        {
+            get { return flaming; }
+            set 
+            { 
+                flaming = value;
+                CalculateDamage();
+            }
         }
 
-        public void SetFlaming(bool isFlaming)
+        /// <summary>
+        /// The constructor calculates damage based on default Magic
+        /// and Flaming values and a starting 3d6 roll/
+        /// </summary>
+        public int Damage { get; private set; }
+        public SwordDamage(int startingRoll)
         {
+            roll = startingRoll;
             CalculateDamage();
-
-            if (isFlaming)
-            {
-                Damage += FLAME_DAMAGE;
-            }
-
-            Debug.WriteLine($"SetFlaming finished: {Damage}(roll: {Roll})");
         }
     }
 }
